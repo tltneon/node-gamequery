@@ -77,6 +77,15 @@
     },
     "params": {}
   },
+  "ark": {
+    "name": "ARK: Survival Evolved",
+    "protocol": "valve",
+    "options": {
+      "port": 7777,
+      "port_query": 27015
+    },
+    "params": {}
+  },
   "arma": {
     "name": "ArmA Armed Assault 1",
     "protocol": "gamespy2",
