@@ -1,4 +1,12 @@
 {
+  "7dtd": {
+    "name": "7 Days to Die",
+    "protocol": "valve",
+    "options": {
+      "port_query_offset": 1
+    },
+    "params": {}
+  },
   "aoc": {
     "name": "Age of Chivalry",
     "protocol": "valve",
