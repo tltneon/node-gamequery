@@ -1196,6 +1196,14 @@
       "hasClanTag": true
     }
   },
+  "quakelive": {
+    "name": "Quake Live",
+    "protocol": "valve",
+    "options": {
+      "port":  27960
+    },
+    "params": {}
+  }, 
   "ragdollkungfu": {
     "name": "Rag Doll Kung Fu",
     "protocol": "valve",
@@ -1278,6 +1286,15 @@
     },
     "params": {}
   },
+  "reflex": {
+    "name": "Reflex",
+    "protocol": "valve",
+    "options": {
+      "port":  25787,
+      "port_query": 25797
+    },
+    "params": {}
+  }, 
   "rtcw": {
     "name": "Return to Castle Wolfenstein",
     "protocol": "quake3",
@@ -1619,6 +1636,15 @@
     },
     "params": {}
   },
+  "toxikk": {
+    "name": "TOXIKK",
+    "protocol": "valve",
+    "options": {
+      "port":  7777,
+      "port_query": 27015
+    },
+    "params": {}
+  }, 
   "trackmania2": {
     "name": "Trackmania 2",
     "protocol": "nadeo",
