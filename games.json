@@ -554,17 +554,6 @@
     "options": {},
     "params": {}
   },
-  " Wars": {
-    "name": "doom3",
-    "protocol": "port=3074,port_query=27733",
-    "options": {
-      "isEtqw": true,
-      "hasSpaceBeforeClanTag": true,
-      "hasClanTag": true,
-      "hasTypeFlag": true
-    },
-    "params": {}
-  },
   "fear": {
     "name": "F.E.A.R.",
     "protocol": "gamespy2",
@@ -855,10 +844,6 @@
     "options": {
       "p": true
     },
-    "params": {}
-  },
-  "ort=27016,port_query_offset=1": {
-    "options": {},
     "params": {}
   },
   "mohaa": {
