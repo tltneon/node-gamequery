@@ -1699,7 +1699,7 @@
   },
   "ut": {
     "name": "Unreal Tournament",
-    "protocol": "gamespy1",
+    "protocol": "gamespy3",
     "options": {
       "port": 7777,
       "port_query_offset": 1
