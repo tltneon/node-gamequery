@@ -1,4 +1,20 @@
 {
+  "coex": {
+    "name": "Conan Exiles",
+    "protocol": "valve",
+    "options": {
+      "port_query_offset": 1
+    },
+    "params": {}
+  },
+  "arkse": {
+    "name": "ARK: Survival Evolved",
+    "protocol": "valve",
+    "options": {
+      "port_query_offset": 1
+    },
+    "params": {}
+  },
   "7dtd": {
     "name": "7 Days to Die",
     "protocol": "valve",

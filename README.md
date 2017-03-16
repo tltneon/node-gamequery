@@ -67,6 +67,8 @@ Games List
 ###Supported
 
 * 7 Days to Die (7dtd) [[Separate Query Port](#separate-query-port)]
+* Conan Exiles (coex) [[Separate Query Port](#separate-query-port)]
+* 7ARK: Survival Evolved (arkse) [[Separate Query Port](#separate-query-port)]
 * Age of Chivalry (ageofchivalry)
 * Age of Empires 2 (aoe2) [[Separate Query Port](#separate-query-port)]
 * Alien Arena (alienarena) [[Separate Query Port](#separate-query-port)]
