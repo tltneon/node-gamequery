@@ -32,7 +32,7 @@ module.exports = require('./gamespy3').extend({
 		});
 
 		function split(a) {
-			var s = a.split('\x1c');
+			let s = a.split('\x1c');
 			s = s.filter(function(e) { return e });
 			return s;
 		}

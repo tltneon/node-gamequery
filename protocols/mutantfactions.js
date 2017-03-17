@@ -1,22 +1,22 @@
 const request = require('request');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	run: function(state) {
-		var self = this;
+		let self = this;
 		request({
 			uri: 'http://mutantfactions.net/game/receiveLobby.php',
 			timeout: 3000,
 		}, function(e,r,body) {
 			if(e) return self.fatal('Lobby request error');
 
-			var split = body.split('<br/>');
+			let split = body.split('<br/>');
 
-			var found = false;
-			for(var i = 0; i < split.length; i++) {
-				var line = split[i];
-				var fields = line.split('::');
-				var ip = fields[2];
-				var port = fields[3];
+			let found = false;
+			for(let i = 0; i < split.length; i++) {
+				let line = split[i];
+				let fields = line.split('::');
+				let ip = fields[2];
+				let port = fields[3];
 				if(ip == self.options.address && port == self.options.port) {
 					found = fields;
 					break;
@@ -44,7 +44,7 @@ module.exports = require('../protocol').extend({
 			// fields[18] is unknown? listen server?
 			state.raw.version = fields[19];
 
-			for(var i = 0; i < state.raw.numplayers; i++) {
+			for(let i = 0; i < state.raw.numplayers; i++) {
 				state.players.push({});
 			}
 

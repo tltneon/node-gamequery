@@ -5,9 +5,9 @@ module.exports = require('./valve').extend({
 		this.legacyChallenge = true;
 	},
 	queryInfo: function(state,c) {
-		var self = this;
+		let self = this;
 		self.sendPacket(0x46,false,'LSQ',0x49,function(b) {
-			var reader = self.reader(b);
+			let reader = self.reader(b);
 
 			state.raw.protocol = reader.uint(1);
 			state.name = reader.string();

@@ -1,10 +1,10 @@
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	run: function(state) {
-		var self = this;
+		let self = this;
 		self.udpSend('s',function(buffer) {
-			var reader = self.reader(buffer);
+			let reader = self.reader(buffer);
 
-			var header = reader.string({length:4});
+			let header = reader.string({length:4});
 			if(header != 'EYE1') return;
 
 			state.raw.gamename = self.readString(reader);
@@ -18,16 +18,16 @@ module.exports = require('../protocol').extend({
 			state.maxplayers = parseInt(self.readString(reader));
 
 			while(!reader.done()) {
-				var key = self.readString(reader);
+				let key = self.readString(reader);
 				if(!key) break;
-				var value = self.readString(reader);
+				let value = self.readString(reader);
 				state.raw[key] = value;
 			}
-
+			
 			console.log(reader.rest());
 			while(!reader.done()) {
-				var flags = reader.uint(1);
-				var player = {};
+				let flags = reader.uint(1);
+				let player = {};
 				if(flags & 1) player.name = self.readString(reader);
 				if(flags & 2) player.team = self.readString(reader);
 				if(flags & 4) player.skin = self.readString(reader);
@@ -36,12 +36,12 @@ module.exports = require('../protocol').extend({
 				if(flags & 32) player.time = parseInt(self.readString(reader));
 				state.players.push(player);
 			}
-
+			
 			self.finish(state);
 		});
 	},
 	readString: function(reader) {
-		var len = reader.uint(1);
+		let len = reader.uint(1);
 		return reader.string({length:len-1});
 	}
 });

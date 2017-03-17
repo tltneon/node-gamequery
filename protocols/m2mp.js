@@ -1,15 +1,15 @@
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.encoding = 'latin1';
 	},
 	run: function(state) {
-		var self = this;
+		let self = this;
 
 		this.udpSend('M2MP',function(buffer) {
-			var reader = self.reader(buffer);
+			let reader = self.reader(buffer);
 			
-			var header = reader.string({length:4});
+			let header = reader.string({length:4});
 			if(header != 'M2MP') return;
 			
 			state.name = self.readString(reader);
@@ -19,7 +19,7 @@ module.exports = require('../protocol').extend({
 			state.password = !!reader.uint(1);
 			
 			while(!reader.done()) {
-				var name = self.readString(reader);
+				let name = self.readString(reader);
 				if(!name) break;
 				state.players.push({
 					name:name
@@ -31,7 +31,7 @@ module.exports = require('../protocol').extend({
 		});
 	},
 	readString: function(reader) {
-		var length = reader.uint(1);
+		let length = reader.uint(1);
 		return reader.string({length:length-1});
 	},
 });

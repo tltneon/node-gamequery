@@ -1,27 +1,27 @@
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.encoding = 'latin1';
 		this.byteorder = 'be';
 	},
 	run: function(state) {
-		var self = this;
+		let self = this;
 
-		var b = new Buffer([0x00,0x00,0x00,0x09,0x2a,0xff,0xff,0x01,0x6f,0x00,0x00,0x00,0x00]);
+		let b = new Buffer([0x00,0x00,0x00,0x09,0x2a,0xff,0xff,0x01,0x6f,0x00,0x00,0x00,0x00]);
 
 		this.tcpSend(b,function(buffer) {
-			var reader = self.reader(buffer);
+			let reader = self.reader(buffer);
 
 			if(buffer.length < 4) return false;
-			var packetLength = reader.uint(4);
+			let packetLength = reader.uint(4);
 			if(buffer.length < packetLength+12) return false;
 
-			var data = [];
+			let data = [];
 			state.raw.data = data;
 
 			reader.skip(2);
 			while(!reader.done()) {
-				var mark = reader.uint(1);
+				let mark = reader.uint(1);
 				if(mark == 1) {
 					// signed int
 					data.push(reader.int(4));
@@ -30,7 +30,7 @@ module.exports = require('../protocol').extend({
 					data.push(reader.float());
 				} else if(mark == 4) {
 					// string
-					var length = reader.uint(2);
+					let length = reader.uint(2);
 					data.push(reader.string(length));
 				} else if(mark == 6) {
 					// byte
@@ -50,7 +50,7 @@ module.exports = require('../protocol').extend({
 			if(typeof data[8] == 'number') state.maxplayers = data[8];
 
 			if('numplayers' in state.raw) {
-				for(var i = 0; i < state.raw.numplayers; i++) {
+				for(let i = 0; i < state.raw.numplayers; i++) {
 					state.players.push({});
 				}
 			}

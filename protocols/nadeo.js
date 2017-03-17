@@ -1,7 +1,7 @@
-var gbxremote = require('gbxremote'),
+let gbxremote = require('gbxremote'),
 	async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.options.port = 2350;
@@ -16,9 +16,9 @@ module.exports = require('../protocol').extend({
 		}
 	},
 	run: function(state) {
-		var self = this;
+		let self = this;
 
-		var cmds = [
+		let cmds = [
 			['Connect'],
 			['Authenticate', this.options.login,this.options.password],
 			['GetStatus'],
@@ -27,14 +27,14 @@ module.exports = require('../protocol').extend({
 			['GetCurrentChallengeInfo'],
 			['GetCurrentGameInfo']
 		];
-		var results = [];
+		let results = [];
 
 		async.eachSeries(cmds, function(cmdset,c) {
-			var cmd = cmdset[0];
-			var params = cmdset.slice(1);
+			let cmd = cmdset[0];
+			let params = cmdset.slice(1);
 
 			if(cmd == 'Connect') {
-				var client = self.gbxclient = gbxremote.createClient(self.options.port_query,self.options.host, function(err) {
+				let client = self.gbxclient = gbxremote.createClient(self.options.port_query,self.options.host, function(err) {
 					if(err) return self.fatal('GBX error '+JSON.stringify(err));
 					c();
 				});
@@ -47,8 +47,8 @@ module.exports = require('../protocol').extend({
 				});
 			}
 		}, function() {
-			var gamemode = '';
-			var igm = results[5].GameMode;
+			let gamemode = '';
+			let igm = results[5].GameMode;
 			if(igm == 0) gamemode="Rounds";
 			if(igm == 1) gamemode="Time Attack";
 			if(igm == 2) gamemode="Team";

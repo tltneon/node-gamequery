@@ -1,7 +1,7 @@
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
-		this.name = 'Doom 3';
+		this.pretty = 'Doom 3';
 		this.encoding = 'latin1';
 		this.isEtqw = false;
 		this.hasSpaceBeforeClanTag = false;

@@ -1,20 +1,20 @@
-var async = require('async'),
+let async = require('async'),
 	moment = require('moment');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	run: function(state) {
 
-		var self = this;
+		let self = this;
 
 		async.series([
 			function(c) {
-				var b = new Buffer([0x03,0x00,0x00]);
+				let b = new Buffer([0x03,0x00,0x00]);
 				self.query(0,1,1,4,function(reader, version) {
 					if(version >= 4) {
-						var numGrf = reader.uint(1);
+						let numGrf = reader.uint(1);
 						state.raw.grfs = [];
-						for(var i = 0; i < numGrf; i++) {
-							var grf = {};
+						for(let i = 0; i < numGrf; i++) {
+							let grf = {};
 							grf.id = reader.part(4).toString('hex');
 							grf.md5 = reader.part(16).toString('hex');
 							state.raw.grfs.push(grf);
@@ -41,7 +41,7 @@ module.exports = require('../protocol').extend({
 					state.password = !!reader.uint(1);
 					state.maxplayers = reader.uint(1);
 					state.raw.numplayers = reader.uint(1);
-					for(var i = 0; i < state.raw.numplayers; i++) {
+					for(let i = 0; i < state.raw.numplayers; i++) {
 						state.players.push({});
 					}
 					state.raw.numspectators = reader.uint(1);
@@ -61,17 +61,17 @@ module.exports = require('../protocol').extend({
 			},
 
 			function(c) {
-				var vehicle_types = ['train','truck','bus','aircraft','ship'];
-				var station_types = ['station','truckbay','busstation','airport','dock'];
+				let vehicle_types = ['train','truck','bus','aircraft','ship'];
+				let station_types = ['station','truckbay','busstation','airport','dock'];
 
 				self.query(2,3,-1,-1, function(reader,version) {
 					// we don't know how to deal with companies outside version 6
 					if(version != 6) return c();
 
 					state.raw.companies = [];
-					var numCompanies = reader.uint(1);
-					for(var iCompany = 0; iCompany < numCompanies; iCompany++) {
-						var company = {};
+					let numCompanies = reader.uint(1);
+					for(let iCompany = 0; iCompany < numCompanies; iCompany++) {
+						let company = {};
 						company.id = reader.uint(1);
 						company.name = reader.string();
 						company.year_start = reader.uint(4);
@@ -82,11 +82,11 @@ module.exports = require('../protocol').extend({
 						company.password = !!reader.uint(1);
 
 						company.vehicles = {};
-						for(var i = 0; i < vehicle_types.length; i++) {
+						for(let i = 0; i < vehicle_types.length; i++) {
 							company.vehicles[vehicle_types[i]] = reader.uint(2);
 						}
 						company.stations = {};
-						for(var i = 0; i < station_types.length; i++) {
+						for(let i = 0; i < station_types.length; i++) {
 							company.stations[station_types[i]] = reader.uint(2);
 						}
 
@@ -105,24 +105,24 @@ module.exports = require('../protocol').extend({
 	},
 
 	query: function(type,expected,minver,maxver,done) {
-		var self = this;
-		var b = new Buffer([0x03,0x00,type]);
+		let self = this;
+		let b = new Buffer([0x03,0x00,type]);
 		self.udpSend(b,function(buffer) {
-			var reader = self.reader(buffer);
+			let reader = self.reader(buffer);
 
-			var packetLen = reader.uint(2);
+			let packetLen = reader.uint(2);
 			if(packetLen != buffer.length) {
 				self.fatal('Invalid reported packet length: '+packetLen+' '+buffer.length);
 				return true;
 			}
 
-			var packetType = reader.uint(1);
+			let packetType = reader.uint(1);
 			if(packetType != expected) {
 				self.fatal('Unexpected response packet type: '+packetType);
 				return true;
 			}
 
-			var protocolVersion = reader.uint(1);
+			let protocolVersion = reader.uint(1);
 			if((minver != -1 && protocolVersion < minver) || (maxver != -1 && protocolVersion > maxver)) {
 				self.fatal('Unknown protocol version: '+protocolVersion+' Expected: '+minver+'-'+maxver);
 				return true;
@@ -134,8 +134,8 @@ module.exports = require('../protocol').extend({
 	},
 
 	readDate: function(reader) {
-		var daysSinceZero = reader.uint(4);
-		var temp = new Date(0,0,1);
+		let daysSinceZero = reader.uint(4);
+		let temp = new Date(0,0,1);
 		temp.setFullYear(0);
 		temp.setDate(daysSinceZero+1);
 		return moment(temp).format('YYYY-MM-DD');

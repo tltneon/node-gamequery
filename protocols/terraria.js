@@ -1,8 +1,8 @@
 const request = require('request');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	run: function(state) {
-		var self = this;
+		const self = this;
 		request({
 			uri: 'http://'+this.options.address+':'+this.options.port_query+'/v2/server/status',
 			timeout: 3000,
@@ -10,18 +10,18 @@ module.exports = require('../protocol').extend({
 				players: 'true',
 				token: this.options.token
 			}
-		}, function(e,r,body) {
-			if(e) return self.fatal('HTTP error');
-			var json;
+		}, (e,r,body) => {
+			if(e) {return self.fatal('HTTP error');}
+			let json;
 			try {
 				json = JSON.parse(body);
 			} catch(e) {
 				return self.fatal('Invalid JSON');
 			}
 			
-			if(json.status != 200) return self.fatal('Invalid status');
+			if(json.status !== 200) {return self.fatal('Invalid status');}
 
-			json.players.forEach(function(one) {
+			json.players.forEach((one) => {
 				state.players.push({name:one.nickname,team:one.team});
 			});
 			

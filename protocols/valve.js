@@ -1,7 +1,7 @@
-var async = require('async'),
+let async = require('async'),
 	Bzip2 = require('compressjs').Bzip2;
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 
@@ -31,7 +31,7 @@ module.exports = require('../protocol').extend({
 		this._challenge = '';
 	},
 	run: function(state) {
-		var self = this;
+		let self = this;
 		async.series([
 			function(c) { self.queryInfo(state,c); },
 			function(c) { self.queryChallenge(state,c); },
@@ -41,12 +41,12 @@ module.exports = require('../protocol').extend({
 		]);
 	},
 	queryInfo: function(state,c) {
-		var self = this;
+		let self = this;
 		self.sendPacket(
 			0x54,false,'Source Engine Query\0',
 			self.goldsrcInfo ? 0x6D : 0x49,
 			function(b) {
-				var reader = self.reader(b);
+				let reader = self.reader(b);
 				
 				if(self.goldsrcInfo) state.raw.address = reader.string();
 				else state.raw.protocol = reader.uint(1);
@@ -93,7 +93,7 @@ module.exports = require('../protocol').extend({
 						state.raw.shipduration = reader.uint(1);
 					}
 					state.raw.version = reader.string();
-					var extraFlag = reader.uint(1);
+					let extraFlag = reader.uint(1);
 					if(extraFlag & 0x80) state.raw.port = reader.uint(2);
 					if(extraFlag & 0x10) state.raw.steamid = reader.uint(8);
 					if(extraFlag & 0x40) {
@@ -129,7 +129,7 @@ module.exports = require('../protocol').extend({
 		);
 	},
 	queryChallenge: function(state,c) {
-		var self = this;
+		let self = this;
 		if(this.legacyChallenge) {
 			self.sendPacket(0x57,false,false,0x41,function(b) {
 				// sendPacket will catch the response packet and
@@ -141,16 +141,16 @@ module.exports = require('../protocol').extend({
 		}
 	},
 	queryPlayers: function(state,c) {
-		var self = this;
+		let self = this;
 		self.sendPacket(0x55,true,false,0x44,function(b) {
-			var reader = self.reader(b);
-			var num = reader.uint(1);
-			var csgoHiddenPlayers = false;
-			for(var i = 0; i < num; i++) {
+			let reader = self.reader(b);
+			let num = reader.uint(1);
+			let csgoHiddenPlayers = false;
+			for(let i = 0; i < num; i++) {
 				reader.skip(1);
-				var name = reader.string();
-				var score = reader.int(4);
-				var time = reader.float();
+				let name = reader.string();
+				let score = reader.int(4);
+				let time = reader.float();
 
 				if(self.debug) console.log("Found player: "+name+" "+score+" "+time);
 
@@ -165,18 +165,18 @@ module.exports = require('../protocol').extend({
 			if(self.isCsGo && state.players.length == 1 && state.players[0].name == 'Max Players') {
 				if(self.debug) console.log("CSGO server using limited player details");
 				state.players = [];
-				for(var i = 0; i < state.raw.numplayers; i++) { state.players.push({}); }
+				for(let i = 0; i < state.raw.numplayers; i++) { state.players.push({}); }
 			}
 			
 			// if we didn't find the bots, iterate
 			// through and guess which ones they are
 			if(!state.bots.length && state.raw.numbots) {
-				var maxTime = 0;
+				let maxTime = 0;
 				state.players.forEach(function(player) {
 					maxTime = Math.max(player.time,maxTime);
 				});
-				for(var i = 0; i < state.players.length; i++) {
-					var player = state.players[i];
+				for(let i = 0; i < state.players.length; i++) {
+					let player = state.players[i];
 					if(state.bots.length >= state.raw.numbots) continue;
 					if(player.time != maxTime) continue;
 					state.bots.push(player);
@@ -189,14 +189,14 @@ module.exports = require('../protocol').extend({
 		});
 	},
 	queryRules: function(state,c) {
-		var self = this;
+		let self = this;
 		self.sendPacket(0x56,true,false,0x45,function(b) {
-			var reader = self.reader(b);
-			var num = reader.uint(2);
+			let reader = self.reader(b);
+			let num = reader.uint(2);
 			state.raw.rules = {};
-			for(var i = 0; i < num; i++) {
-				var key = reader.string();
-				var value = reader.string();
+			for(let i = 0; i < num; i++) {
+				let key = reader.string();
+				let value = reader.string();
 				state.raw.rules[key] = value;
 			}
 			c();
@@ -209,22 +209,22 @@ module.exports = require('../protocol').extend({
 		});
 	},
 	sendPacket: function(type,sendChallenge,payload,expect,callback,ontimeout) {
-		var self = this;
-		var packetStorage = {};
+		let self = this;
+		let packetStorage = {};
 		
 		send();
 
 		function send(c) {
 			if(typeof payload == 'string') payload = new Buffer(payload,'binary');
-			var challengeLength = sendChallenge ? 4 : 0;
-			var payloadLength = payload ? payload.length : 0;
+			let challengeLength = sendChallenge ? 4 : 0;
+			let payloadLength = payload ? payload.length : 0;
 
-			var b = new Buffer(5 + challengeLength + payloadLength);
+			let b = new Buffer(5 + challengeLength + payloadLength);
 			b.writeInt32LE(-1, 0);
 			b.writeUInt8(type, 4);
 			
 			if(sendChallenge) {
-				var challenge = self._challenge;
+				let challenge = self._challenge;
 				if(!challenge) challenge = 0xffffffff;
 				if(self.byteorder == 'le') b.writeUInt32LE(challenge, 5);
 				else b.writeUInt32BE(challenge, 5);
@@ -235,9 +235,9 @@ module.exports = require('../protocol').extend({
 		}
 
 		function receivedOne(buffer) {
-			var reader = self.reader(buffer);
+			let reader = self.reader(buffer);
 
-			var header = reader.int(4);
+			let header = reader.int(4);
 			if(header == -1) {
 				// full package
 				if(self.debug) console.log("Received full packet");
@@ -245,14 +245,14 @@ module.exports = require('../protocol').extend({
 			}
 			if(header == -2) {
 				// partial package
-				var uid = reader.uint(4);
+				let uid = reader.uint(4);
 				if(!(uid in packetStorage)) packetStorage[uid] = {};
-				var packets = packetStorage[uid];
+				let packets = packetStorage[uid];
 
-				var bzip = false;
+				let bzip = false;
 				if(!self.goldsrcSplits && uid & 0x80000000) bzip = true;
 
-				var packetNum,payload,numPackets;
+				let packetNum,payload,numPackets;
 				if(self.goldsrcSplits) {
 					packetNum = reader.uint(1);
 					numPackets = packetNum & 0x0f;
@@ -276,8 +276,8 @@ module.exports = require('../protocol').extend({
 				if(Object.keys(packets).length != numPackets) return;
 
 				// assemble the parts
-				var list = [];
-				for(var i = 0; i < numPackets; i++) {
+				let list = [];
+				for(let i = 0; i < numPackets; i++) {
 					if(!(i in packets)) {
 						self.fatal('Missing packet #'+i);
 						return true;
@@ -285,7 +285,7 @@ module.exports = require('../protocol').extend({
 					list.push(packets[i]);
 				}
 
-				var assembled = Buffer.concat(list);
+				let assembled = Buffer.concat(list);
 				if(bzip) {
 					if(self.debug) console.log("BZIP DETECTED - Extracing packet...");
 					try {
@@ -295,14 +295,14 @@ module.exports = require('../protocol').extend({
 						return true;
 					}
 				}
-				var assembledReader = self.reader(assembled);
+				let assembledReader = self.reader(assembled);
 				assembledReader.skip(4); // header
 				return receivedFull(assembledReader);
 			}
 		}
 
 		function receivedFull(reader) {
-			var type = reader.uint(1);
+			let type = reader.uint(1);
 			
 			if(type == 0x41) {
 				if(self.debug) console.log('Received challenge key');

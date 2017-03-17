@@ -1,13 +1,13 @@
-const async = require('async');
+let async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.encoding = 'latin1';
 	},
 	run: function(state) {
-		var self = this;
-		var decoded;
+		let self = this;
+		let decoded;
 
 		async.series([
 			function(c) {
@@ -22,16 +22,16 @@ module.exports = require('../protocol').extend({
 					state.map = data.shift();
 					state.raw.roundsplayed = parseInt(data.shift());
 					state.raw.roundstotal = parseInt(data.shift());
-
-					var teamCount = data.shift();
+					
+					let teamCount = data.shift();
 					state.raw.teams = [];
-					for(var i = 0; i < teamCount; i++) {
-						var tickets = parseFloat(data.shift());
+					for(let i = 0; i < teamCount; i++) {
+						let tickets = parseFloat(data.shift());
 						state.raw.teams.push({
 							tickets:tickets
 						});
 					}
-
+					
 					state.raw.targetscore = parseInt(data.shift());
 					data.shift();
 					state.raw.ranked = (data.shift() == 'true');
@@ -52,7 +52,7 @@ module.exports = require('../protocol').extend({
 						state.raw.country = data.shift();
 						state.raw.quickmatch = (data.shift() == 'true');
 					}
-
+					
 					c();
 				});
 			},
@@ -60,9 +60,9 @@ module.exports = require('../protocol').extend({
 				self.query(['version'], function(data) {
 					if(self.debug) console.log(data);
 					if(data[0] != 'OK') return self.fatal('Missing OK');
-
+					
 					state.raw.version = data[2];
-
+					
 					c();
 				});
 			},
@@ -71,16 +71,16 @@ module.exports = require('../protocol').extend({
 					if(self.debug) console.log(data);
 					if(data.shift() != 'OK') return self.fatal('Missing OK');
 
-					var fieldCount = parseInt(data.shift());
-					var fields = [];
-					for(var i = 0; i < fieldCount; i++) {
+					let fieldCount = parseInt(data.shift());
+					let fields = [];
+					for(let i = 0; i < fieldCount; i++) {
 						fields.push(data.shift());
 					}
-					var numplayers = data.shift();
-					for(var i = 0; i < numplayers; i++) {
-						var player = {};
+					let numplayers = data.shift();
+					for(let i = 0; i < numplayers; i++) {
+						let player = {};
 						fields.forEach(function(key) {
-							var value = data.shift();
+							let value = data.shift();
 
 							if(key == 'teamId') key = 'team';
 							else if(key == 'squadId') key = 'squad';
@@ -109,9 +109,9 @@ module.exports = require('../protocol').extend({
 		]);
 	},
 	query: function(params,c) {
-		var self = this;
+		let self = this;
 		this.tcpSend(buildPacket(params), function(data) {
-			var decoded = self.decodePacket(data);
+			let decoded = self.decodePacket(data);
 			if(!decoded) return false;
 			c(decoded);
 			return true;
@@ -119,40 +119,40 @@ module.exports = require('../protocol').extend({
 	},
 	decodePacket: function(buffer) {
 		if(buffer.length < 8) return false;
-		var reader = this.reader(buffer);
-		var header = reader.uint(4);
-		var totalLength = reader.uint(4);
+		let reader = this.reader(buffer);
+		let header = reader.uint(4);
+		let totalLength = reader.uint(4);
 		if(buffer.length < totalLength) return false;
-
-		var paramCount = reader.uint(4);
-		var params = [];
-		for(var i = 0; i < paramCount; i++) {
-			var len = reader.uint(4);
+		
+		let paramCount = reader.uint(4);
+		let params = [];
+		for(let i = 0; i < paramCount; i++) {
+			let len = reader.uint(4);
 			params.push(reader.string({length:len}));
-			var strNull = reader.uint(1);
+			let strNull = reader.uint(1);
 		}
 		return params;
 	}
 });
 
 function buildPacket(params) {
-	var self = this;
-
-	var paramBuffers = [];
+	let self = this;
+	
+	let paramBuffers = [];
 	params.forEach(function(param) {
 		paramBuffers.push(new Buffer(param,'utf8'));
 	});
 
-	var totalLength = 12;
+	let totalLength = 12;
 	paramBuffers.forEach(function(paramBuffer) {
 		totalLength += paramBuffer.length+1+4;
 	});
 
-	var b = new Buffer(totalLength);
+	let b = new Buffer(totalLength);
 	b.writeUInt32LE(0,0);
 	b.writeUInt32LE(totalLength,4);
 	b.writeUInt32LE(params.length,8);
-	var offset = 12;
+	let offset = 12;
 	paramBuffers.forEach(function(paramBuffer) {
 		b.writeUInt32LE(paramBuffer.length, offset); offset += 4;
 		paramBuffer.copy(b, offset); offset += paramBuffer.length;

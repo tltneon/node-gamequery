@@ -1,6 +1,6 @@
-const async = require('async');
+let async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.sessionId = 1;
@@ -11,20 +11,20 @@ module.exports = require('../protocol').extend({
 		this.isJc2mp = false;
 	},
 	run: function(state) {
-		var self = this;
-		var challenge,packets;
+		let self = this;
+		let challenge,packets;
 
 		async.series([
 			function(c) {
 				if(self.noChallenge) return c();
 				self.sendPacket(9,false,false,false,function(buffer) {
-					var reader = self.reader(buffer);
+					let reader = self.reader(buffer);
 					challenge = parseInt(reader.string());
 					c();
 				});
 			},
 			function(c) {
-				var requestPayload;
+				let requestPayload;
 				if(self.isJc2mp) {
 					// they completely alter the protocol. because why not.
 					requestPayload = new Buffer([0xff,0xff,0xff,0x02]);
@@ -44,9 +44,9 @@ module.exports = require('../protocol').extend({
 
 				state.raw.playerTeamInfo = {};
 
-				for(var iPacket = 0; iPacket < packets.length; iPacket++) {
-					var packet = packets[iPacket];
-					var reader = self.reader(packet);
+				for(let iPacket = 0; iPacket < packets.length; iPacket++) {
+					let packet = packets[iPacket];
+					let reader = self.reader(packet);
 
 					if(self.debug) {
 						console.log("+++"+packet.toString('hex'));
@@ -57,9 +57,9 @@ module.exports = require('../protocol').extend({
 
 					if(iPacket == 0) {
 						while(!reader.done()) {
-							var key = reader.string();
+							let key = reader.string();
 							if(!key) break;
-							var value = reader.string();
+							let value = reader.string();
 
 							// reread the next line if we hit the weird ut3 bug
 							if(value == 'p1073741829') value = reader.string();
@@ -73,34 +73,34 @@ module.exports = require('../protocol').extend({
 					if(self.isJc2mp) {
 						state.raw.numPlayers2 = reader.uint(2);
 						while(!reader.done()) {
-							var player = {};
+							let player = {};
 							player.name = reader.string();
 							player.steamid = reader.string();
 							player.ping = reader.uint(2);
 							state.players.push(player);
 						}
 					} else {
-						var firstMode = true;
+						let firstMode = true;
 						while(!reader.done()) {
-							var mode = reader.string();
+							let mode = reader.string();
 							if(mode.charCodeAt(0) <= 2) mode = mode.substring(1);
 							if(!mode) continue;
-							var offset = 0;
+							let offset = 0;
 							if(iPacket != 0 && firstMode) offset = reader.uint(1);
 							reader.skip(1);
 							firstMode = false;
 
-							var modeSplit = mode.split('_');
-							var modeName = modeSplit[0];
-							var modeType = modeSplit.length > 1 ? modeSplit[1] : 'no_';
+							let modeSplit = mode.split('_');
+							let modeName = modeSplit[0];
+							let modeType = modeSplit.length > 1 ? modeSplit[1] : 'no_';
 
 							if(!(modeType in state.raw.playerTeamInfo)) {
 								state.raw.playerTeamInfo[modeType] = [];
 							}
-							var store = state.raw.playerTeamInfo[modeType];
+							let store = state.raw.playerTeamInfo[modeType];
 
 							while(!reader.done()) {
-								var item = reader.string();
+								let item = reader.string();
 								if(!item) break;
 
 								while(store.length <= offset) { store.push({}); }
@@ -125,10 +125,10 @@ module.exports = require('../protocol').extend({
 
 				if('' in state.raw.playerTeamInfo) {
 					state.raw.playerTeamInfo[''].forEach(function(playerInfo) {
-						var player = {};
-						for(var from in playerInfo) {
-							var key = from;
-							var value = playerInfo[from];
+						let player = {};
+						for(let from in playerInfo) {
+							let key = from;
+							let value = playerInfo[from];
 
 							if(key == 'player') key = 'name';
 							if(key == 'score' || key == 'ping' || key == 'team' || key == 'deaths' || key == 'pid') value = parseInt(value);
@@ -143,12 +143,12 @@ module.exports = require('../protocol').extend({
 		]);
 	},
 	sendPacket: function(type,challenge,payload,assemble,c) {
-		var self = this;
+		let self = this;
 
-		var challengeLength = (this.noChallenge || challenge === false) ? 0 : 4;
-		var payloadLength = payload ? payload.length : 0;
+		let challengeLength = (this.noChallenge || challenge === false) ? 0 : 4;
+		let payloadLength = payload ? payload.length : 0;
 
-		var b = new Buffer(7 + challengeLength + payloadLength);
+		let b = new Buffer(7 + challengeLength + payloadLength);
 		b.writeUInt8(0xFE, 0);
 		b.writeUInt8(0xFD, 1);
 		b.writeUInt8(type, 2);
@@ -156,13 +156,13 @@ module.exports = require('../protocol').extend({
 		if(challengeLength) b.writeInt32BE(challenge, 7);
 		if(payloadLength) payload.copy(b, 7+challengeLength);
 
-		var numPackets = 0;
-		var packets = {};
+		let numPackets = 0;
+		let packets = {};
 		this.udpSend(b,function(buffer) {
-			var reader = self.reader(buffer);
-			var iType = reader.uint(1);
+			let reader = self.reader(buffer);
+			let iType = reader.uint(1);
 			if(iType != type) return;
-			var iSessionId = reader.uint(4);
+			let iSessionId = reader.uint(4);
 			if(iSessionId != self.sessionId) return;
 
 			if(!assemble) {
@@ -177,8 +177,8 @@ module.exports = require('../protocol').extend({
 			}
 
 			reader.skip(9); // filler data -- usually set to 'splitnum\0'
-			var id = reader.uint(1);
-			var last = (id & 0x80);
+			let id = reader.uint(1);
+			let last = (id & 0x80);
 			id = id & 0x7f;
 			if(last) numPackets = id+1;
 
@@ -193,8 +193,8 @@ module.exports = require('../protocol').extend({
 			if(!numPackets || Object.keys(packets).length != numPackets) return;
 
 			// assemble the parts
-			var list = [];
-			for(var i = 0; i < numPackets; i++) {
+			let list = [];
+			for(let i = 0; i < numPackets; i++) {
 				if(!(i in packets)) {
 					self.fatal('Missing packet #'+i);
 					return true;

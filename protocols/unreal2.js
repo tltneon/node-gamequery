@@ -1,18 +1,18 @@
-const async = require('async');
+let async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.encoding = 'latin1';
 	},
 	run: function(state) {
 
-		var self = this;
+		let self = this;
 
 		async.series([
 			function(c) {
 				self.sendPacket(0,true,function(b) {
-					var reader = self.reader(b);
+					let reader = self.reader(b);
 					state.raw.serverid = reader.uint(4);
 					state.raw.ip = self.readUnrealString(reader);
 					state.raw.port = reader.uint(4);
@@ -29,13 +29,13 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendPacket(1,true,function(b) {
-					var reader = self.reader(b);
+					let reader = self.reader(b);
 					state.raw.mutators = [];
 					state.raw.rules = {};
 					while(!reader.done()) {
-						var key = self.readUnrealString(reader,true);
-						var value = self.readUnrealString(reader,true);
-						if(key == 'Mutator') state.raw.mutators.push(value);
+						let key = self.readUnrealString(reader,true);
+						let value = self.readUnrealString(reader,true);
+						if(key === 'Mutator') state.raw.mutators.push(value);
 						else state.raw.rules[key] = value;
 					}
 
@@ -47,10 +47,10 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendPacket(2,false,function(b) {
-					var reader = self.reader(b);
+					let reader = self.reader(b);
 
 					while(!reader.done()) {
-						var player = {};
+						let player = {};
 						player.id = reader.uint(4);
 						if(!player.id) break;
 						if(player.id == 0) {
@@ -64,10 +64,10 @@ module.exports = require('../protocol').extend({
 
 						// Extra data for Unreal2XMP players
 						if(player.id == 0) {
-							var count = reader.uint(1);
-							for(var iField = 0; iField < count; iField++) {
-								var key = self.readUnrealString(reader,true);
-								var value = self.readUnrealString(reader,true);
+							let count = reader.uint(1);
+							for(let iField = 0; iField < count; iField++) {
+								let key = self.readUnrealString(reader,true);
+								let value = self.readUnrealString(reader,true);
 								player[key] = value;
 							}
 						}
@@ -99,8 +99,8 @@ module.exports = require('../protocol').extend({
 		}
 	},
 	readUnrealString: function(reader, stripColor) {
-		var length = reader.uint(1);
-		var out;
+		let length = reader.uint(1);
+		let out;
 		if(length < 0x80) {
 			//out = reader.string({length:length});
 			out = '';
@@ -123,14 +123,14 @@ module.exports = require('../protocol').extend({
 		return out;
 	},
 	sendPacket: function(type,required,callback) {
-		var self = this;
-		var outbuffer = new Buffer([0x79,0,0,0,type]);
+		let self = this;
+		let outbuffer = new Buffer([0x79,0,0,0,type]);
 
-		var packets = [];
+		let packets = [];
 		this.udpSend(outbuffer,function(buffer) {
-			var reader = self.reader(buffer);
-			var header = reader.uint(4);
-			var iType = reader.uint(1);
+			let reader = self.reader(buffer);
+			let header = reader.uint(4);
+			let iType = reader.uint(1);
 			if(iType != type) return;
 			packets.push(reader.rest());
 		},function() {

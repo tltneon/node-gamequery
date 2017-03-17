@@ -1,8 +1,8 @@
-const async = require('async');
+let async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	run: function(state) {
-		var self = this;
+		let self = this;
 
 		async.series([
 			function(c) {
@@ -13,11 +13,11 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendCommand('si', function(data) {
-					var split = data.split('\r\n');
+					let split = data.split('\r\n');
 					split.forEach(function(line) {
-						var equals = line.indexOf('=');
-						var key = equals == -1 ? line : line.substr(0,equals);
-						var value = equals == -1 ? '' : line.substr(equals+1);
+						let equals = line.indexOf('=');
+						let key = equals == -1 ? line : line.substr(0,equals);
+						let value = equals == -1 ? '' : line.substr(equals+1);
 						state.raw[key] = value;
 					});
 					c();
@@ -25,13 +25,13 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendCommand('pl', function(data) {
-					var split = data.split('\r\n');
-					var fields = split.shift().split('\t');
+					let split = data.split('\r\n');
+					let fields = split.shift().split('\t');
 					split.forEach(function(line) {
-						var split2 = line.split('\t');
-						var player = {};
+						let split2 = line.split('\t');
+						let player = {};
 						split2.forEach(function(value,i) {
-							var key = fields[i];
+							let key = fields[i];
 							if(!key) return;
 							if(key == 'nick') key = 'name';
 							if(m = value.match(/^"(.*)"$/)) value = m[1];
@@ -44,14 +44,14 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendCommand('cl', function(data) {
-					var split = data.split('\r\n');
-					var fields = split.shift().split('\t');
+					let split = data.split('\r\n');
+					let fields = split.shift().split('\t');
 					state.raw.channels = [];
 					split.forEach(function(line) {
-						var split2 = line.split('\t');
-						var channel = {};
+						let split2 = line.split('\t');
+						let channel = {};
 						split2.forEach(function(value,i) {
-							var key = fields[i];
+							let key = fields[i];
 							if(!key) return;
 							if(m = value.match(/^"(.*)"$/)) value = m[1];
 							channel[key] = value;

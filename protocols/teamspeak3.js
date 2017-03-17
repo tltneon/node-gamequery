@@ -1,13 +1,13 @@
-const async = require('async');
+let async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	run: function(state) {
-		var self = this;
+		let self = this;
 
 		async.series([
 			function(c) {
 				self.sendCommand('use port='+self.options.port, function(data) {
-					var split = data.split('\n\r');
+					let split = data.split('\n\r');
 					if(split[0] != 'TS3') self.fatal('Invalid header');
 					c();
 				}, true);
@@ -22,10 +22,12 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendCommand('clientlist', function(data) {
-					for(var i = 0; i < data.length; i++) {
+					for(let i = 0; i < data.length; i++) {
 						data[i].name = data[i].client_nickname;
 						delete data[i].client_nickname;
-						state.players.push(data[i]);
+						if(data[i].client_type == 0) {
+							state.players.push(data[i]);
+						}
 					}
 					c();
 				});
@@ -45,22 +47,22 @@ module.exports = require('../protocol').extend({
 		this.tcpSend(cmd+'\x0A', function(buffer) {
 			if(buffer.length < 21) return;
 			if(buffer.slice(-21).toString() != '\n\rerror id=0 msg=ok\n\r') return;
-			var body = buffer.slice(0,-21).toString();
+			let body = buffer.slice(0,-21).toString();
 
-			var out;
+			let out;
 
 			if(raw) {
 				out = body;
 			} else {
-				var segments = body.split('|');
+				let segments = body.split('|');
 				out = [];
 				segments.forEach(function(line) {
-					var split = line.split(' ');
-					var unit = {};
+					let split = line.split(' ');
+					let unit = {};
 					split.forEach(function(field) {
-						var equals = field.indexOf('=');
-						var key = equals == -1 ? field : field.substr(0,equals);
-						var value = equals == -1 ? '' : field.substr(equals+1)
+						let equals = field.indexOf('=');
+						let key = equals == -1 ? field : field.substr(0,equals);
+						let value = equals == -1 ? '' : field.substr(equals+1)
 							.replace(/\\s/g,' ').replace(/\\\//g,'/');
 						unit[key] = value;
 					});

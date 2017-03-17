@@ -1,6 +1,6 @@
-const async = require('async');
+let async = require('async');
 
-module.exports = require('../protocol').extend({
+module.exports = require('./core').extend({
 	init: function() {
 		this._super();
 		this.sessionId = 1;
@@ -8,7 +8,7 @@ module.exports = require('../protocol').extend({
 		this.byteorder = 'be';
 	},
 	run: function(state) {
-		var self = this;
+		let self = this;
 
 		async.series([
 			function(c) {
@@ -29,13 +29,13 @@ module.exports = require('../protocol').extend({
 			},
 			function(c) {
 				self.sendPacket('players', function(data) {
-					var players = {};
-					var teams = {};
-					for(var ident in data) {
-						var split = ident.split('_');
-						var key = split[0];
-						var id = split[1];
-						var value = data[ident];
+					let players = {};
+					let teams = {};
+					for(let ident in data) {
+						let split = ident.split('_');
+						let key = split[0];
+						let id = split[1];
+						let value = data[ident];
 
 						if(key == 'teamname') {
 							teams[id] = value;
@@ -47,9 +47,9 @@ module.exports = require('../protocol').extend({
 							players[id][key] = value;
 						}
 					}
-
+					
 					state.raw.teams = teams;
-					for(var i in players) state.players.push(players[i]);
+					for(let i in players) state.players.push(players[i]);
 					self.finish(state);
 				});
 			}
@@ -57,23 +57,23 @@ module.exports = require('../protocol').extend({
 
 	},
 	sendPacket: function(type,callback) {
-		var self = this;
-		var queryId = '';
-		var output = {};
+		let self = this;
+		let queryId = '';
+		let output = {};
 		this.udpSend('\\'+type+'\\',function(buffer) {
-			var reader = self.reader(buffer);
-			var str = reader.string({length:buffer.length});
-			var split = str.split('\\');
+			let reader = self.reader(buffer);
+			let str = reader.string({length:buffer.length});
+			let split = str.split('\\');
 			split.shift();
-			var data = {};
+			let data = {};
 			while(split.length) {
-				var key = split.shift();
-				var value = split.shift() || '';
+				let key = split.shift();
+				let value = split.shift() || '';
 				data[key] = value;
 			}
 			if(!('queryid' in data)) return;
 			if(queryId && data.queryid != queryId) return;
-			for(var i in data) output[i] = data[i];
+			for(let i in data) output[i] = data[i];
 			if('final' in output) {
 				delete output.final;
 				delete output.queryid;
