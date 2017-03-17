@@ -1,4 +1,4 @@
-Gamequery - Game Server Query Library
+Gamequery - Game Server Query Library ![TravisCI](https://travis-ci.org/kurt-stolle/node-gamequery.svg?branch=master)
 ---
 Gamequery (formerly game-server-query) is a game server query library, capable of querying for the status of
 nearly any game or voice server. If a server makes its status publically available,
