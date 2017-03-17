@@ -1,30 +1,43 @@
-# Game Server Query
+Gamequery - Game Server Query Library ![TravisCI](https://travis-ci.org/kurt-stolle/node-gamequery.svg?branch=master)
+---
+Gamequery (formerly game-server-query) is a game server query library, capable of querying for the status of
+nearly any game or voice server. If a server makes its status publically available,
+Gamequery can fetch it for you.
 
-Game server querying tools for Node.JS. Used to receive information about a game such as players, map and server name.
+Gamequery is available as a node.js module, as well as a
+[command line executable](#usage-from-command-line).
 
-Example usage
+Usage from Node.js
 ---
 
 ```shell
-npm install game-server-query
+npm install gamequery
 ```
 
+Promise:
 ```javascript
-var query = require('game-server-query');
-query(
-	{
-		type: 'minecraft',
-		host: 'mc.example.com'
-	},
-	function(state) {
-		if(state.error){
-      console.log("Server is offline");
-    }
-		else {
-      console.log(state);
-    }
-	}
-);
+var gamequery = require('gamequery');
+gamequery.query({
+	type: 'minecraft',
+	host: 'mc.example.com'
+}).then((state) => {
+	console.log(state);
+}).catch((error) => {
+	console.log("Server is offline");
+});
+```
+
+or Node.JS Callback:
+```javascript
+var gamequery = require('gamequery');
+gamequery.query({
+	type: 'minecraft',
+	host: 'mc.example.com'
+},
+function(e,state) {
+	if(e) console.log("Server is offline");
+	else console.log(state);
+});
 ```
 
 ### Input Parameters
@@ -34,14 +47,9 @@ query(
 * **port**: (optional) Uses the protocol default if not set
 * **notes**: (optional) Passed through to output
 
-###Callback
+### Return Value
 
-The callback function is "guaranteed" to be called exactly once.
-
-If an error occurs, the returned object will contain an "error" key, indicating the issue.
-If the error key exists, it should be assumed that the game server is offline or unreachable.
-
-Otherwise, the returned object is guaranteed to contain the following keys:
+The returned state object will contain the following keys:
 
 **Stable, always present:**
 
@@ -64,15 +72,14 @@ Some servers may return an additional player count number, which may be present 
 Games List
 ---
 
-###Supported
+### Supported
 
-* 7 Days to Die (7dtd) [[Separate Query Port](#separate-query-port)]
-* Conan Exiles (coex) [[Separate Query Port](#separate-query-port)]
-* ARK: Survival Evolved (arkse) [[Separate Query Port](#separate-query-port)]
+* 7 Days to Die (7d2d) [[Separate Query Port](#separate-query-port)]
 * Age of Chivalry (ageofchivalry)
 * Age of Empires 2 (aoe2) [[Separate Query Port](#separate-query-port)]
 * Alien Arena (alienarena) [[Separate Query Port](#separate-query-port)]
 * Alien Swarm (alienswarm)
+* ARK: Survival Evolved (arkse) [[Separate Query Port](#separate-query-port)]
 * Aliens vs Predator 2 (avp2)
 * Aliens vs Predator 2010 (avp2010)
 * America's Army (americasarmy) [[Separate Query Port](#separate-query-port)]
@@ -91,6 +98,7 @@ Games List
 * Battlefield: Bad Company 2 (bfbc2) [[Separate Query Port](#separate-query-port)]
 * Battlefield 3 (bf3) [[Separate Query Port](#separate-query-port)]
 * Battlefield 4 (bf4) [[Separate Query Port](#separate-query-port)]
+* Battlefield Hardline (bfh) [[Separate Query Port](#separate-query-port)]
 * Breach (breach)
 * Breed (breed)
 * Brink (brink) [[Separate Query Port](#separate-query-port)]
@@ -109,6 +117,7 @@ Games List
 * Codename Eagle (codenameeagle) [[Separate Query Port](#separate-query-port)]
 * Commandos 3: Destination Berlin (commandos3) [[Separate Query Port](#separate-query-port)]
 * Command and Conquer: Renegade (cacrenegade) [[Separate Query Port](#separate-query-port)]
+* Conan Exiles (conanexiles) [[Separate Query Port](#separate-query-port)]
 * Contact J.A.C.K. (contactjack) [[Separate Query Port](#separate-query-port)]
 * Counter-Strike 1.6 (cs16)
 * Counter-Strike: Condition Zero (cscz)
@@ -161,6 +170,7 @@ Games List
 * Hidden and Dangerous 2 (had2) [[Separate Query Port](#separate-query-port)]
 * Homefront (homefront)
 * Homeworld 2 (homeworld2) [[Separate Query Port](#separate-query-port)]
+* Hurtworld (hurtworld) [[Seperate Query Port](#seperate-query-port)]
 * IGI-2: Covert Strike (igi2) [[Separate Query Port](#separate-query-port)]
 * IL-2 Sturmovik (il2) [[Separate Query Port](#separate-query-port)]
 * Insurgency (insurgency)
@@ -168,6 +178,7 @@ Games List
 * James Bond: Nightfire (jamesbondnightfire) [[Separate Query Port](#separate-query-port)]
 * Just Cause 2 Multiplayer (jc2mp)
 * Killing Floor (killingfloor) [[Separate Query Port](#separate-query-port)]
+* Killing Floor 2 (killingfloor2) [[Separate Query Port](#separate-query-port)]
 * Kingpin: Life of Crime (kingpin) [[Separate Query Port](#separate-query-port)]
 * KISS Psycho Circus (kisspc) [[Separate Query Port](#separate-query-port)]
 * KzMod (kzmod)
@@ -209,6 +220,7 @@ Games List
 * Painkiller (painkiller) [[Separate Query Port](#separate-query-port)]
 * Postal 2 (postal2) [[Separate Query Port](#separate-query-port)]
 * Prey (prey) [[Separate Query Port](#separate-query-port)]
+* Primal Carnage: Extinction (primalcarnage) [[Separate Query Port](#separate-query-port)]
 * Quake 1: QuakeWorld (quake1)
 * Quake 2 (quake2)
 * Quake 3: Arena (quake3)
@@ -227,7 +239,7 @@ Games List
 * Ricochet (ricochet)
 * Rise of Nations (riseofnations) [[Separate Query Port](#separate-query-port)]
 * Rune (rune) [[Separate Query Port](#separate-query-port)]
-* Rust (rust) [[Separate Query Port](#separate-query-port)]
+* Rust (rust)
 * San Andreas Multiplayer (samp)
 * Serious Sam (ss) [[Separate Query Port](#separate-query-port)]
 * Serious Sam 2 (ss2)
@@ -274,6 +286,7 @@ Games List
 * Turok 2 (turok2) [[Separate Query Port](#separate-query-port)]
 * Universal Combat (universalcombat) [[Separate Query Port](#separate-query-port)]
 * Unreal (unreal) [[Separate Query Port](#separate-query-port)]
+* unturned (unturned) [[Separate Query Port](#separate-query-port)]
 * Unreal Tournament (ut) [[Separate Query Port](#separate-query-port)]
 * Unreal Tournament 2003 (ut2003) [[Separate Query Port](#separate-query-port)]
 * Unreal Tournament 2004 (ut2004) [[Separate Query Port](#separate-query-port)]
@@ -291,26 +304,58 @@ Games List
 * Zombie Master (zombiemaster)
 * Zombie Panic: Source (zps)
 
-> Don't see your game listed here?
->
-> First, let us know so we can fix it. Then, you can try using some common query
-> protocols directly by using one of these server types:
-> * protocol-ase
-> * protocol-battlefield
-> * protocol-doom3
-> * protocol-gamespy1
-> * protocol-gamespy2
-> * protocol-gamespy3
-> * protocol-nadeo
-> * protocol-quake2
-> * protocol-quake3
-> * protocol-unreal2
-> * protocol-valve
+### Not supported yet
+
+* rFactor Engine (rfactor):
+ * rFactor
+ * Arca Sim Racing
+* Cube Engine (cube):
+ * Cube 1
+ * Assault Cube
+ * Cube 2: Sauerbraten
+ * Blood Frontier
+* BFRIS
+* Call of Duty: Black Ops 1 and 2 (no documentation, may require rcon)
+* Counter-Strike 2D
+* Freelancer
+* Ghost Recon
+* GTR2
+* Haze
+* Hexen 2
+* Plain Sight
+* Red Faction
+* Savage: Battle for Newerth
+* Savage 2: A Tortured Soul
+* Sum of All Fears
+* Teeworlds
+* Tribes 1: Starsiege
+* Tribes 2
+* Vice City Multiplayer
+* World in Conflict
+
+### Other games
+Want support for one of these games? Please open an issue to show your interest!
+
+Don't see your game listed above?
+
+First, let us know so we can fix it. Then, you can try using some common query
+protocols directly by using one of these server types:
+* protocol-ase
+* protocol-battlefield
+* protocol-doom3
+* protocol-gamespy1
+* protocol-gamespy2
+* protocol-gamespy3
+* protocol-nadeo
+* protocol-quake2
+* protocol-quake3
+* protocol-unreal2
+* protocol-valve
 
 Games with Additional Notes
 ---
 
-### <a name="csgo"></a>Counter-Strike: Global Offensive
+### Counter-Strike: Global Offensive
 To receive a full player list response from CS:GO servers, the server must
 have set the cvar: host_players_show 2
 
@@ -329,9 +374,9 @@ If you do not wish to run the plugin, or do not require details such as channel 
 you can use the 'mumbleping' server type instead, which uses a less accurate but more reliable solution
 
 ### Nadeo (ShootMania / TrackMania / etc)
-The server must have xmlrpc enabled, and you must pass the xmlrpc port to the module, not the connection port.
+The server must have xmlrpc enabled, and you must pass the xmlrpc port to gamequery, not the connection port.
 You must have a user account on the server with access level User or higher.
-Pass the login into to the module with the additional options: login, password
+Pass the login into to gamequery with the additional options: login, password
 
 ### <a name="teamspeak3"></a>TeamSpeak 3
 For teamspeak 3 queries to work correctly, the following permissions must be available for the guest server group:
@@ -345,11 +390,28 @@ For teamspeak 3 queries to work correctly, the following permissions must be ava
  * b_virtualserver_channelgroup_list
 
 ### Terraria
-Requires tshock server mod, and a REST user token, which can be passed to the module with the
+Requires tshock server mod, and a REST user token, which can be passed to gamequery with the
 additional option: token
 
 ### Separate Query Port
 Games with this note use a query port which is usually not the same as the game's connection port.
-Usually, no action will be required from you. The 'port' option you pass the module should be the game's
-connection port. the module will attempt to calculate the query port automatically. If the query still fails,
-you may need to pass the 'port_query' option to the module as well, indicating the separate query port.
+Usually, no action will be required from you. The 'port' option you pass gamequery should be the game's
+connection port. gamequery will attempt to calculate the query port automatically. If the query still fails,
+you may need to pass the 'port_query' option to gamequery as well, indicating the separate query port.
+
+Usage from Command Line
+---
+
+Want to integrate server queries from a batch script or other programming language?
+You'll still need npm to install gamequery:
+```shell
+npm install gamequery -g
+```
+
+After installing gamequery globally, you can call gamequery via the command line
+using the same parameters mentioned in the API above:
+```shell
+gamequery --type minecraft --host mc.example.com --port 11234
+```
+
+The output of the command will be in JSON format.
