@@ -47,7 +47,7 @@
     "gamequery": "bin/gamequery.js"
   },
   "scripts": {
-    "test": "vows --spec"
+    "test": "vows test/index.js --spec"
   },
   "files": [
     "bin/gamequery.js",
