@@ -38,6 +38,12 @@
 		"varint": "~4.0.0",
 		"moment": "~2.9.0"
 	},
+	"bin": {
+		"gamequery": "bin/gamequery.js"
+	},
+	"scripts": {
+		"test": "vows --spec"
+	},
 	"files": [
 		"bin/gamequery.js",
 		"lib/",
