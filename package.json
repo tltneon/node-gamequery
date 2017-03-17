@@ -1,31 +1,31 @@
 {
-	"name": "game-server-query",
+	"name": "gamequery",
 	"description": "Game server query tools for Node.JS",
 	"keywords": [
 		"srcds",
 		"query",
 		"game",
 		"gameserver",
-		"nodejs",
 		"server",
-		"node",
 		"serverquery",
 		"game server query",
-		"server query"
+		"server query",
+		"gamequery",
+		"game protocol"
 	],
 	"main": "lib/index.js",
 	"author": "Kurt Stolle",
-	"version": "1.0.11",
+	"version": "1.0.12",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kurt-stolle/game-server-query.git"
+		"url": "https://github.com/kurt-stolle/node-gamequery.git"
 	},
 	"bugs": {
-		"url": "https://github.com/kurt-stolle/game-server-query/issues"
+		"url": "https://github.com/kurt-stolle/node-gamequery/issues"
 	},
 	"licenses": [{
 		"type": "MIT",
-		"url": "https://github.com/kurt-stolle/game-server-query/blob/master/LICENSE"
+		"url": "https://github.com/kurt-stolle/node-gamequery/blob/master/LICENSE"
 	}],
 	"dependencies": {
 		"iconv-lite": "~0.4.6",
@@ -37,5 +37,12 @@
 		"minimist": "~1.1.0",
 		"varint": "~4.0.0",
 		"moment": "~2.9.0"
-	}
+	},
+	"files": [
+		"bin/gamequery.js",
+		"lib/",
+		"protocols/",
+		"LICENSE",
+		"README.md"
+	]
 }
