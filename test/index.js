@@ -11,16 +11,12 @@ vows.describe('Gamequery').addBatch({
             gamequery.query({
                 type: 'minecraft',
                 host: 'mc.example.com'
-            }).then((state) => {
-                
-            }).catch((error) => {
-                
             });
 
             this.callback();
         },
-        "we get an error" : (err)=>{
+        "we get an error" : function(err){
             assert.isUndefined(err);
         }
-    },
+    }
 }).export(module);
