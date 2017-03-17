@@ -15,7 +15,7 @@ vows.describe('Gamequery').addBatch({
 
             this.callback();
         },
-        "we get an error" : function(err){
+        "we get no error" : function(err){
             assert.isUndefined(err);
         }
     }
