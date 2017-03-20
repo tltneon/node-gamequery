@@ -51,6 +51,7 @@
         "bin/gamequery.js",
         "lib/",
         "protocols/",
+        "games.txt",
         "LICENSE",
         "README.md"
     ]
