@@ -2,7 +2,7 @@ let EventEmitter = require('events').EventEmitter,
 	dns = require('dns'),
 	net = require('net'),
 	async = require('async'),
-	Class = require('../lib/class'),
+	Class = require('../lib/extend'),
 	Reader = require('../lib/reader');
 
 module.exports = Class.extend(EventEmitter,{
