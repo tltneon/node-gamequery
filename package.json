@@ -15,7 +15,7 @@
     ],
     "main": "lib/index.js",
     "author": "Kurt Stolle",
-    "version": "1.0.15",
+    "version": "1.0.16",
     "lisence": "MIT",
     "repository": {
         "type": "git",
